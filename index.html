@@ -1,0 +1,941 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MEMBER VIP — Hyper-Realistic Image Describer</title>
+<script src="https://js.puter.com/v2/"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Times New Roman', Times, serif;
+    background: linear-gradient(160deg, #f8fbff 0%, #eaf3ff 45%, #dbe9fb 100%);
+    min-height: 100vh;
+    color: #1e2a3a;
+    padding: 18px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+  }
+
+  .container {
+    width: 100%;
+    max-width: 720px;
+    background: #ffffff;
+    border: 1px solid #cfe0f5;
+    border-radius: 14px;
+    padding: 22px 20px;
+    box-shadow: 0 14px 40px rgba(30, 90, 180, 0.10),
+                0 3px 10px rgba(30, 90, 180, 0.05);
+  }
+
+  .top-banner {
+    text-align: center;
+    margin-bottom: 14px;
+    padding: 10px 16px;
+    background: linear-gradient(135deg, #eaf3ff 0%, #dbe9fb 100%);
+    border: 1px solid #9fc4ec;
+    border-radius: 10px;
+  }
+
+  .top-banner-title {
+    font-size: 17px;
+    font-weight: 700;
+    letter-spacing: 4px;
+    color: #14508c;
+    text-transform: uppercase;
+  }
+
+  .top-banner-sub {
+    margin-top: 3px;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: #5b7ba3;
+    text-transform: uppercase;
+    font-weight: 700;
+  }
+
+  .video-wrap {
+    position: relative;
+    width: 100%;
+    padding-bottom: 56.25%;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 2px solid #9fc4ec;
+    box-shadow: 0 8px 24px rgba(30, 90, 180, 0.15);
+    margin-bottom: 20px;
+    background: #000;
+  }
+
+  .video-wrap video {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    object-fit: cover;
+    border: none;
+  }
+
+  #bgAudio { display: none; }
+
+  .header { text-align: center; margin-bottom: 18px; }
+
+  .title {
+    font-size: 21px;
+    font-weight: 700;
+    color: #14508c;
+    letter-spacing: 1.5px;
+    margin-bottom: 4px;
+    text-transform: uppercase;
+  }
+
+  .title::after {
+    content: "";
+    display: block;
+    width: 60px;
+    height: 2px;
+    margin: 9px auto 0;
+    background: linear-gradient(90deg, transparent, #4a8fd4, transparent);
+  }
+
+  .subtitle {
+    margin-top: 9px;
+    font-size: 11px;
+    color: #5b7ba3;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    font-weight: 700;
+  }
+
+  .badge {
+    display: inline-block;
+    margin-top: 12px;
+    padding: 5px 15px;
+    font-size: 10px;
+    border-radius: 20px;
+    background: #eaf3ff;
+    border: 1px solid #9fc4ec;
+    color: #14508c;
+    letter-spacing: 1px;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+
+  /* ===== DEVICE ID PANEL ===== */
+  .device-panel {
+    margin-top: 16px;
+    padding: 12px 14px;
+    background: #f8fbff;
+    border: 1px solid #cfe0f5;
+    border-radius: 10px;
+    font-size: 12px;
+    color: #1e2a3a;
+  }
+
+  .device-panel-title {
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    color: #14508c;
+    font-weight: 700;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .device-id-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .device-id {
+    flex: 1;
+    font-family: 'Courier New', monospace;
+    font-size: 11px;
+    padding: 7px 10px;
+    background: #ffffff;
+    border: 1px solid #9fc4ec;
+    border-radius: 6px;
+    color: #14508c;
+    font-weight: 700;
+    letter-spacing: 1px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .mini-btn {
+    padding: 6px 12px;
+    font-family: 'Times New Roman', Times, serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    border-radius: 6px;
+    border: 1px solid #4a8fd4;
+    background: #ffffff;
+    color: #14508c;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+
+  .mini-btn:hover { background: #eaf3ff; }
+
+  /* ===== LOCK SCREEN ===== */
+  .lock-box {
+    margin-top: 18px;
+    padding: 22px 18px;
+    background: linear-gradient(180deg, #f8fbff 0%, #eaf3ff 100%);
+    border: 2px solid #9fc4ec;
+    border-radius: 12px;
+    text-align: center;
+  }
+
+  .lock-icon {
+    font-size: 42px;
+    margin-bottom: 8px;
+    display: block;
+  }
+
+  .lock-title {
+    font-size: 17px;
+    font-weight: 700;
+    color: #14508c;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .lock-desc {
+    font-size: 12.5px;
+    color: #5b7ba3;
+    line-height: 1.65;
+    margin-bottom: 16px;
+  }
+
+  .lock-input {
+    width: 100%;
+    padding: 12px 14px;
+    font-family: 'Courier New', monospace;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-align: center;
+    text-transform: uppercase;
+    border: 1px solid #9fc4ec;
+    border-radius: 8px;
+    background: #ffffff;
+    color: #14508c;
+    outline: none;
+    transition: all 0.2s;
+  }
+
+  .lock-input:focus {
+    border-color: #4a8fd4;
+    box-shadow: 0 0 0 3px rgba(74, 143, 212, 0.15);
+  }
+
+  .lock-btn {
+    width: 100%;
+    margin-top: 12px;
+    padding: 12px;
+    font-family: 'Times New Roman', Times, serif;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    color: #ffffff;
+    background: linear-gradient(135deg, #2b6cb0, #4a8fd4);
+    box-shadow: 0 6px 18px rgba(43, 108, 176, 0.30);
+    transition: all 0.25s ease;
+  }
+
+  .lock-btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 24px rgba(43, 108, 176, 0.42);
+  }
+
+  .lock-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .lock-msg {
+    margin-top: 10px;
+    font-size: 12px;
+    font-weight: 700;
+    min-height: 16px;
+  }
+
+  .lock-msg.err { color: #b91c1c; }
+  .lock-msg.ok { color: #15803d; }
+
+  .lock-help {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px dashed #cfe0f5;
+    font-size: 11px;
+    color: #5b7ba3;
+    line-height: 1.6;
+  }
+
+  /* ===== APP CONTENT (hidden until unlocked) ===== */
+  .app-content { display: none; }
+  .app-content.show { display: block; }
+
+  .upload-area {
+    margin-top: 20px;
+    border: 1px dashed #9fc4ec;
+    border-radius: 10px;
+    padding: 26px 16px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    background: #f8fbff;
+  }
+
+  .upload-area:hover,
+  .upload-area.active {
+    border-color: #4a8fd4;
+    background: #eaf3ff;
+  }
+
+  .upload-area input { display: none; }
+
+  .upload-icon { font-size: 32px; margin-bottom: 6px; display: block; }
+
+  .upload-text {
+    font-size: 14px;
+    color: #1e2a3a;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+  }
+
+  .upload-hint {
+    font-size: 11px;
+    color: #5b7ba3;
+    margin-top: 5px;
+  }
+
+  .preview { margin-top: 16px; display: none; text-align: center; }
+
+  .preview img {
+    max-width: 100%;
+    max-height: 280px;
+    border-radius: 9px;
+    border: 2px solid #9fc4ec;
+    box-shadow: 0 6px 18px rgba(30, 90, 180, 0.15);
+  }
+
+  .btn {
+    width: 100%;
+    margin-top: 16px;
+    padding: 13px;
+    font-family: 'Times New Roman', Times, serif;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    color: #ffffff;
+    background: linear-gradient(135deg, #2b6cb0, #4a8fd4, #63a4e6);
+    box-shadow: 0 6px 18px rgba(43, 108, 176, 0.30);
+    transition: all 0.25s ease;
+  }
+
+  .btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 24px rgba(43, 108, 176, 0.42);
+  }
+
+  .btn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+  .status {
+    margin-top: 14px;
+    padding: 11px 15px;
+    border-radius: 9px;
+    font-size: 13px;
+    text-align: center;
+    display: none;
+    font-weight: 700;
+  }
+
+  .status.loading {
+    display: block;
+    background: #eaf3ff;
+    border: 1px solid #9fc4ec;
+    color: #14508c;
+  }
+
+  .status.error {
+    display: block;
+    background: #fef2f2;
+    border: 1px solid #f0a0a0;
+    color: #b91c1c;
+  }
+
+  .spinner {
+    display: inline-block;
+    width: 13px;
+    height: 13px;
+    border: 2px solid rgba(43, 108, 176, 0.25);
+    border-top-color: #2b6cb0;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    vertical-align: -2px;
+    margin-right: 6px;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .result-box {
+    margin-top: 18px;
+    display: none;
+    background: #f8fbff;
+    border: 1px solid #cfe0f5;
+    border-radius: 10px;
+    padding: 16px;
+  }
+
+  .result-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    padding-bottom: 9px;
+    border-bottom: 1px solid #cfe0f5;
+  }
+
+  .result-title {
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: #14508c;
+    font-weight: 700;
+  }
+
+  .result-actions { display: flex; gap: 6px; }
+
+  .copy-btn {
+    padding: 6px 13px;
+    font-family: 'Times New Roman', Times, serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    border-radius: 7px;
+    border: 1px solid #4a8fd4;
+    background: #ffffff;
+    color: #14508c;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .copy-btn:hover { background: #eaf3ff; }
+
+  .result-text {
+    font-size: 13.5px;
+    line-height: 1.75;
+    color: #1e2a3a;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+  }
+
+  .footer {
+    margin-top: 22px;
+    padding-top: 14px;
+    border-top: 1px solid #cfe0f5;
+    text-align: center;
+    font-size: 11px;
+    color: #5b7ba3;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+  }
+
+  .footer span { color: #14508c; font-weight: 900; }
+
+  .mute-btn {
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 1px solid #9fc4ec;
+    background: #ffffff;
+    color: #14508c;
+    font-size: 16px;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(30, 90, 180, 0.18);
+    z-index: 999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+  }
+
+  .mute-btn:hover {
+    background: #eaf3ff;
+    transform: scale(1.06);
+  }
+</style>
+</head>
+<body>
+
+<button class="mute-btn" id="muteBtn" title="Mute/Unmute">🔊</button>
+
+<div class="container">
+
+  <div class="top-banner">
+    <div class="top-banner-title">MEMBER VIP</div>
+    <div class="top-banner-sub">Premium Access Only</div>
+  </div>
+
+  <div class="video-wrap">
+    <video 
+      src="video.mp4" 
+      autoplay 
+      muted 
+      loop 
+      playsinline
+      preload="auto">
+      Browser kamu tidak mendukung video MP4.
+    </video>
+  </div>
+
+  <audio id="bgAudio" autoplay loop preload="auto">
+    <source src="audio.mp3" type="audio/mpeg">
+  </audio>
+
+  <div class="header">
+    <div class="title">Hyper-Realistic Image Describer</div>
+    <div class="subtitle">Natural Look • Anti-AI • iPhone Style</div>
+    <div class="badge">✦ Premium Generator ✦</div>
+  </div>
+
+  <!-- ===== DEVICE ID PANEL ===== -->
+  <div class="device-panel">
+    <div class="device-panel-title">🔒 Device ID Perangkat Ini</div>
+    <div class="device-id-row">
+      <div class="device-id" id="deviceIdText">Menghitung...</div>
+      <button class="mini-btn" id="copyDeviceBtn" type="button">📋 Copy</button>
+    </div>
+  </div>
+
+  <!-- ===== LOCK SCREEN ===== -->
+  <div class="lock-box" id="lockBox">
+    <span class="lock-icon">🔐</span>
+    <div class="lock-title">Aktivasi Perangkat</div>
+    <div class="lock-desc">
+      Generator ini terkunci hanya untuk <b>1 HP</b> saja.<br>
+      Kirim <b>Device ID</b> di atas ke Admin untuk mendapatkan kode aktivasi.
+    </div>
+    <input 
+      type="text" 
+      class="lock-input" 
+      id="lockInput" 
+      maxlength="16" 
+      placeholder="XXXX-XXXX-XXXX" 
+      autocomplete="off"
+    >
+    <button class="lock-btn" id="unlockBtn" type="button">🔓 Aktivasi Sekarang</button>
+    <div class="lock-msg" id="lockMsg"></div>
+    <div class="lock-help">
+      Kode aktivasi terikat permanen dengan perangkat ini.<br>
+      Tidak bisa dipakai di HP lain.
+    </div>
+  </div>
+
+  <!-- ===== APP CONTENT ===== -->
+  <div class="app-content" id="appContent">
+    <label class="upload-area" id="uploadArea">
+      <input type="file" id="fileInput" accept="image/*">
+      <span class="upload-icon">📸</span>
+      <div class="upload-text">Tap untuk pilih gambar referensi</div>
+      <div class="upload-hint">Format: JPG, PNG, WEBP</div>
+    </label>
+
+    <div class="preview" id="preview">
+      <img id="previewImg" alt="preview">
+    </div>
+
+    <button class="btn" id="generateBtn" disabled>
+      ✦ Generate Ultra-Realistic Prompt ✦
+    </button>
+
+    <div class="status" id="status"></div>
+
+    <div class="result-box" id="resultBox">
+      <div class="result-header">
+        <div class="result-title">📜 Hasil Prompt</div>
+        <div class="result-actions">
+          <button class="copy-btn" id="copyBtn">📋 Copy</button>
+        </div>
+      </div>
+      <div class="result-text" id="resultText"></div>
+    </div>
+  </div>
+
+  <div class="footer">
+    Powered by <span>MEMBER VIP</span> × Puter.js
+  </div>
+</div>
+
+<script>
+// ============================================
+//  MEMBER VIP — Web Generator V7
+//  + DEVICE LOCK (1 HP only)
+// ============================================
+
+// ---------- KONFIGURASI ADMIN ----------
+// Ganti SECRET_KEY ini dengan kata rahasia milik Anda (JANGAN diberitahu ke pembeli)
+// Kode aktivasi akan digenerate dari: DEVICE_ID + SECRET_KEY
+const SECRET_KEY = "DREMAY-VIP-2025-XYZ";
+// ---------------------------------------
+
+const SYSTEM_PROMPT = `
+You are an elite photo-prompt engineer specialized in 
+HYPER-REALISTIC, NATURAL-LOOKING, ANTI-AI photographs that look 100% like real 
+smartphone snapshots — NOT AI generated, NOT CGI, NOT 3D render, NOT glossy.
+
+Your output MUST follow this EXACT structure (in ENGLISH only), with sections 
+separated by blank lines:
+
+=== SECTION 1: EDIT INSTRUCTION ===
+A paragraph starting with: "Edit and preserve the original face of every model 
+based on the reference file provided. Do not change the facial identity at all. 
+Face shape, facial proportions, skin tone, bone structure, eyes, nose, lips, 
+eyebrows, ears, jawline, hair, all distinctive facial features, and natural 
+expression must remain 1000% identical to the reference image. AI is only allowed 
+to enhance visual quality such as resolution, dynamic range, skin texture detail, 
+sharpness, lighting, and color WITHOUT changing the original facial character."
+
+Then continue in the SAME paragraph describing the EXACT details of the reference:
+subject (age, gender, height if visible, ethnicity, pose), clothing (fabric, color, 
+details), foreground objects, background environment, lighting source, time of day, 
+camera angle, composition ratio, mood — everything you see, hyper detailed.
+
+=== SECTION 2: DESKRIPSI (one paragraph) ===
+A single dense paragraph describing the photo in a candid, natural, real-life way, 
+as if describing an actual smartphone photo taken in real conditions. Include 
+real-world photographic cues: "realistic skin texture", "natural shadows", 
+"candid street photography", "cinematic low-light atmosphere", "smartphone flash 
+photography", "slight motion blur typical of phone cameras", "natural grain", 
+"true-to-life colors", "iPhone 11 style natural lighting", "authentic ambient 
+lighting", "no studio lighting", "no beauty retouch".
+
+CRITICAL RULES:
+- The photo MUST look like an authentic iPhone / Android snapshot.
+- NO AI look, NO plastic skin, NO over-smoothing, NO beauty filter.
+- Natural imperfections allowed: slight noise, slight blur, real pores, uneven 
+  lighting, mixed color temperature, lens flare, grain — anything that makes it 
+  look real and unpolished.
+- Lighting MUST feel like real ambient light or phone flash — never studio.
+- Include "shot on iPhone 11" style cues: soft HDR, natural shadows, real color science.
+- Aspect ratio must be vertical 9:16 unless the reference is horizontal.
+- Everything in ENGLISH.
+
+=== SECTION 3: NEGATIVE PROMPT ===
+One long line beginning with "Negative prompt:" followed by a comma-separated list 
+of things to avoid, including (but not limited to):
+changed or different face, over-smoothed face, plastic skin, over-beautified, anime 
+face, cartoon, CGI, 3D render, different hair, too-neat hair, changed head shape, 
+asymmetric eyes, crossed eyes, changed nose, changed lips, disproportional body, 
+deformed hands, extra fingers, fused fingers, extra legs, extra limbs, different pose, 
+different clothing, missing accessories, missing props, missing foreground objects, 
+missing background elements, wrong time of day, studio lighting, too bright, 
+overexposure, extreme underexposure, excessive blur, low quality, excessive noise, 
+oversaturated, excessive HDR, artificial lighting, watermark, logo, random text, 
+cropped head, cropped body, changed composition, perspective distortion.
+
+ABSOLUTE OUTPUT RULES:
+1. ENGLISH ONLY. No other language.
+2. Use EXACTLY the three sections above, in order: EDIT INSTRUCTION, DESKRIPSI, NEGATIVE PROMPT.
+3. Section 1 and Section 2 can be one paragraph each OR combined — but keep clear.
+4. NO greetings, NO disclaimers, NO closing.
+5. Do NOT add bullet points or markdown lists.
+6. Match the reference image as closely as possible.
+7. The final result must read like a real photo prompt that produces an image 
+   indistinguishable from a genuine iPhone photo — NOT AI art.
+`;
+
+const USER_PROMPT = `
+Analyze this reference image and generate a photo prompt in ENGLISH ONLY with EXACTLY 
+these three sections:
+
+1) EDIT INSTRUCTION — preserving the original face 1000% identical, then describing 
+   every visible detail of the reference (subject, clothing, foreground, background, 
+   lighting, time of day, camera, composition).
+
+2) DESKRIPSI — ONE paragraph, hyper-realistic, candid, natural, iPhone-style, no AI 
+   look, realistic skin texture, natural shadows, ambient lighting, phone-camera feel.
+
+3) NEGATIVE PROMPT — one long comma-separated line of things to avoid.
+
+Rules:
+- English only.
+- No bullet points.
+- The photo must look like a real iPhone 11 snapshot, NOT AI.
+- No studio lighting, no beauty filter, no plastic skin.
+- Match the reference image exactly.
+`;
+
+// ============================================
+//  DEVICE LOCK SYSTEM
+// ============================================
+
+// Hash sederhana (djb2) — cukup untuk fingerprint non-kripto
+function hashStr(str) {
+  let h = 5381;
+  for (let i = 0; i < str.length; i++) {
+    h = ((h << 5) + h) + str.charCodeAt(i);
+    h = h & 0xffffffff;
+  }
+  return Math.abs(h).toString(36).toUpperCase();
+}
+
+// Bikin Device ID dari ciri-ciri unik perangkat
+function generateDeviceId() {
+  const ua = navigator.userAgent || '';
+  const lang = navigator.language || '';
+  const platform = navigator.platform || '';
+  const cores = navigator.hardwareConcurrency || 0;
+  const mem = navigator.deviceMemory || 0;
+  const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || '';
+  const screenInfo = `${screen.width}x${screen.height}x${screen.colorDepth}`;
+  const pixelRatio = window.devicePixelRatio || 1;
+  const touch = ('ontouchstart' in window) ? 'T' : 'N';
+
+  const raw = [ua, lang, platform, cores, mem, tz, screenInfo, pixelRatio, touch].join('|');
+  const h1 = hashStr(raw);
+  const h2 = hashStr(raw + '::salt2');
+  const h3 = hashStr(raw + '::salt3');
+  const combined = (h1 + h2 + h3).toUpperCase();
+  const clean = combined.replace(/[^A-Z0-9]/g, '').slice(0, 12).padEnd(12, 'X');
+  return `${clean.slice(0,4)}-${clean.slice(4,8)}-${clean.slice(8,12)}`;
+}
+
+// Hitung kode aktivasi yang benar untuk Device ID tertentu
+// Format kode: 4 blok x 4 char = 16 char, tapi kita pakai 3 blok biar simple
+function generateExpectedCode(deviceId) {
+  const h1 = hashStr(deviceId + SECRET_KEY + '::A');
+  const h2 = hashStr(deviceId + SECRET_KEY + '::B');
+  const h3 = hashStr(deviceId + SECRET_KEY + '::C');
+  const code = (h1 + h2 + h3).toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 12).padEnd(12, 'X');
+  return `${code.slice(0,4)}-${code.slice(4,8)}-${code.slice(8,12)}`;
+}
+
+const DEVICE_ID = generateDeviceId();
+const EXPECTED_CODE = generateExpectedCode(DEVICE_ID);
+const STORAGE_KEY = 'vip_unlock_' + DEVICE_ID;
+
+// --- UI REFS ---
+const deviceIdText = document.getElementById('deviceIdText');
+const copyDeviceBtn = document.getElementById('copyDeviceBtn');
+const lockBox = document.getElementById('lockBox');
+const lockInput = document.getElementById('lockInput');
+const unlockBtn = document.getElementById('unlockBtn');
+const lockMsg = document.getElementById('lockMsg');
+const appContent = document.getElementById('appContent');
+
+// Tampilkan Device ID
+deviceIdText.textContent = DEVICE_ID;
+
+// Cek apakah HP ini sudah pernah unlock
+function checkUnlocked() {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved === EXPECTED_CODE) {
+      showApp();
+      return true;
+    }
+  } catch (e) {}
+  return false;
+}
+
+function showApp() {
+  lockBox.style.display = 'none';
+  appContent.classList.add('show');
+}
+
+function showLock() {
+  lockBox.style.display = 'block';
+  appContent.classList.remove('show');
+}
+
+// Copy Device ID
+copyDeviceBtn.addEventListener('click', async () => {
+  try {
+    await navigator.clipboard.writeText(DEVICE_ID);
+    copyDeviceBtn.textContent = '✅ Tersalin';
+    setTimeout(() => copyDeviceBtn.textContent = '📋 Copy', 1600);
+  } catch {
+    copyDeviceBtn.textContent = '❌ Gagal';
+    setTimeout(() => copyDeviceBtn.textContent = '📋 Copy', 1600);
+  }
+});
+
+// Auto-format kode aktivasi (XXXX-XXXX-XXXX)
+lockInput.addEventListener('input', (e) => {
+  let v = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+  if (v.length > 12) v = v.slice(0, 12);
+  let out = '';
+  for (let i = 0; i < v.length; i++) {
+    if (i === 4 || i === 8) out += '-';
+    out += v[i];
+  }
+  e.target.value = out;
+});
+
+// Proses unlock
+unlockBtn.addEventListener('click', () => {
+  const input = lockInput.value.trim().toUpperCase();
+  lockMsg.className = 'lock-msg';
+
+  if (input.length < 14) {
+    lockMsg.classList.add('err');
+    lockMsg.textContent = '❌ Format kode tidak valid';
+    return;
+  }
+
+  if (input === EXPECTED_CODE) {
+    try { localStorage.setItem(STORAGE_KEY, EXPECTED_CODE); } catch (e) {}
+    lockMsg.classList.add('ok');
+    lockMsg.textContent = '✅ Aktivasi berhasil!';
+    setTimeout(showApp, 700);
+  } else {
+    lockMsg.classList.add('err');
+    lockMsg.textContent = '❌ Kode aktivasi salah untuk perangkat ini';
+    lockInput.value = '';
+  }
+});
+
+// Enter = unlock
+lockInput.addEventListener('keypress', (e) => {
+  if (e.key === 'Enter') unlockBtn.click();
+});
+
+// ============================================
+//  AUDIO + MUTE
+// ============================================
+const bgAudio = document.getElementById('bgAudio');
+const muteBtn = document.getElementById('muteBtn');
+let audioStarted = false;
+
+function tryPlayAudio() {
+  if (!audioStarted) {
+    bgAudio.play()
+      .then(() => { audioStarted = true; })
+      .catch(() => {});
+  }
+}
+window.addEventListener('load', tryPlayAudio);
+document.body.addEventListener('click', tryPlayAudio, { once: true });
+document.body.addEventListener('touchstart', tryPlayAudio, { once: true });
+
+muteBtn.addEventListener('click', (e) => {
+  e.stopPropagation();
+  bgAudio.muted = !bgAudio.muted;
+  muteBtn.textContent = bgAudio.muted ? '🔇' : '🔊';
+  if (!bgAudio.muted && bgAudio.paused) {
+    bgAudio.play().catch(() => {});
+  }
+});
+
+// ============================================
+//  GENERATOR UTAMA
+// ============================================
+const uploadArea = document.getElementById('uploadArea');
+const fileInput = document.getElementById('fileInput');
+const preview = document.getElementById('preview');
+const previewImg = document.getElementById('previewImg');
+const generateBtn = document.getElementById('generateBtn');
+const statusEl = document.getElementById('status');
+const resultBox = document.getElementById('resultBox');
+const resultText = document.getElementById('resultText');
+const copyBtn = document.getElementById('copyBtn');
+
+let selectedImageDataUrl = null;
+
+uploadArea.addEventListener('click', () => fileInput.click());
+
+fileInput.addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    selectedImageDataUrl = ev.target.result;
+    previewImg.src = selectedImageDataUrl;
+    preview.style.display = 'block';
+    generateBtn.disabled = false;
+    resultBox.style.display = 'none';
+    statusEl.className = 'status';
+    statusEl.style.display = 'none';
+  };
+  reader.readAsDataURL(file);
+});
+
+generateBtn.addEventListener('click', async () => {
+  if (!selectedImageDataUrl) return;
+
+  generateBtn.disabled = true;
+  resultBox.style.display = 'none';
+  statusEl.className = 'status loading';
+  statusEl.innerHTML = '<span class="spinner"></span> Menganalisis dengan gaya iPhone natural... (15-40 detik)';
+
+  try {
+    const response = await puter.ai.chat(
+      [
+        { role: 'system', content: SYSTEM_PROMPT },
+        { role: 'user', content: [
+          { type: 'text', text: USER_PROMPT },
+          { type: 'image_url', image_url: { url: selectedImageDataUrl } }
+        ]}
+      ],
+      { model: 'google/gemini-2.5-flash' }
+    );
+
+    let text = '';
+    if (typeof response === 'string') text = response;
+    else if (response?.message?.content) {
+      const c = response.message.content;
+      text = Array.isArray(c) ? c.map(x => x.text || '').join('\n') : c;
+    } else if (response?.text) text = response.text;
+    else text = JSON.stringify(response);
+
+    resultText.textContent = text.trim();
+    resultBox.style.display = 'block';
+    statusEl.className = 'status';
+    statusEl.style.display = 'none';
+
+  } catch (err) {
+    console.error(err);
+    statusEl.className = 'status error';
+    statusEl.innerHTML = '❌ Gagal: ' + (err.message || 'Coba lagi sebentar lagi.');
+  } finally {
+    generateBtn.disabled = false;
+  }
+});
+
+copyBtn.addEventListener('click', async () => {
+  try {
+    await navigator.clipboard.writeText(resultText.textContent);
+    copyBtn.textContent = '✅ Copied!';
+    setTimeout(() => copyBtn.textContent = '📋 Copy', 1800);
+  } catch {
+    copyBtn.textContent = '❌ Gagal';
+    setTimeout(() => copyBtn.textContent = '📋 Copy', 1800);
+  }
+});
+
+// ============================================
+//  INIT
+// ============================================
+if (!checkUnlocked()) {
+  showLock();
+}
+</script>
+
+</body>
+</html>
